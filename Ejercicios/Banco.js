@@ -1,143 +1,68 @@
-// Array of users
 const usuarios = [
-    {
-        identificacion: 109022,
-        informacion: {
-            name: "Carlos",
-            Pin: 1234,
-            Saldo: 100000,
-        },
-    },
-    {
-        identificacion: 109021,
-        informacion: {
-            name: "Yarleno",
-            Pin: 4321,
-            Saldo: 100000,
-        },
-    },
-    {
-        identificacion: 109023,
-        informacion: {
-            name: "Camilo",
-            Pin: 2345,
-            Saldo: 100000,
-        },
-    },
+    { identificacion: 109487, nombre: "Yarleno", pin: 4545, Saldo: 100000},
+    { identificacion: 100555, nombre: "Carlos", pin: 1234, Saldo: 100000},
+    { identificacion: 119234, nombre: "Camilo", pin: 8778, Saldo: 100000 }
 ];
 
-
-const pinCarlos = usuarios[0].informacion.Pin;
-const pinYarleno = usuarios[1].informacion.Pin;
-const pinCamilo = usuarios[2].informacion.Pin;
-
-const idCarlos = usuarios[0].identificacion;
-const idYarleno = usuarios[1].identificacion;
-const idCamilo = usuarios[2].identificacion;
-
-
-//El usuario se identifica
-function idIngresado(){
-    return Number(prompt("Ponga su numero de identificacion"))
-}
-idIngresado();
-
-//El usuario pone el pin
-function PinIngresado(){
-    return Number(prompt("Ingrese su pin"))
-}
-PinIngresado();
-
-
-//Funcion Si es verdadera  la informacion
-
-function validarIdentificacion(idIngresada) {
-
-    for (let i = 0; i < usuarios.length; i++) {
-       
-        if (usuarios[i].identificacion === idIngresada) {
-            return usuario[i] 
-        }
-    }
-    return null
-}
-validarIdentificacion();
-
-//Funcion Validar Pin
-
-function ValidarPin(PinIngresado){
-
-    for(let i = 0; i < usuarios.length; i++){
-        
-        if(usuarios[i].informacion.Pin === PinIngresado){
-            return usuarios[i]
-        }
-    }
-    return null
-}
-ValidarPin();
-
-// Menu
-function Menu(validarIdentificacion, ValidarPin){
-    
-    if(validarIdentificacion === )
+// Función para solicitar y devolver la identificación del usuario
+function idIngresado() {
+    return Number(prompt("Ponga su número de identificación"));
 }
 
-
-//OTRO
-
-// Array of users
-const usuarios = [
-    {id:109022, Nombre:"Camilo", Pin: 1234, saldo:100000},
-    {id:109023, Nombre:"Carlos", Pin: 1235, saldo:100000},
-    {id:109024, Nombre:"Yarleno", Pin: 1236, saldo:100000}
-
-];
-
-//El usuario se identifica
-function idIngresado(){
-    return Number(prompt("Ponga su numero de identificacion"))
-}
-idIngresado();
-
-//El usuario pone el pin
-function PinIngresado(){
-    return Number(prompt("Ingrese su pin"))
-}
-PinIngresado();
-
-
-//Funcion Si es verdadera  la informacion
-
-function validarIdentificacion(idIngresado, PinIngresado) {
-
-    const usuarioEncontrado = usuarios.find(usuarios => usuarios.id == idingresadaUsuario)
-    const contraseñaEncontrada = usuarios.find(usuarios => usuarios.Pin)
-
-    if(usuarioEncontrado === idIngresado){
-        (contraseñaEncontrada === PinIngresado)
-        alert("Su usuario es correcto")
+// Función para solicitar y validar el PIN del usuario
+function validarPin(usuario) {
+    const pinIngresado = Number(prompt("Ingrese su PIN"));
+    if (pinIngresado === usuario.pin) {
+        alert(`Bienvenido, ${usuario.nombre}!`);
         return true
-    }else{
-        alert("Su usuario es incorrecto")
+    } else {
+        alert("PIN incorrecto. Inténtelo de nuevo.");
         return false
     }
 }
 
-validarIdentificacion();
-
-//Menu 
-function Menu(validarIdentificacion){
+// Función principal para validar al usuario
+function validacionUsu() {
+    const id = idIngresado(); 
+    const usuario = usuarios.find(u => u.identificacion === id);
     
-    while(validarIdentificacion === true){
-        let opcion = Number(prompt("Bienvenido, seleccione 1)Consultar saldo 2)retirar 3)Transferir"))
-        
-        switch(opcion){
-            case 1: return saldo
-            case 2: return Retiro 
-            case 3: return Transferencia
-        }
+    if (usuario) {
+        validarPin(usuario);
+    } else {
+        alert("Usuario no encontrado.");
+        return false
     }
-
 }
 
+validacionUsu();
+
+//Funcion menu
+function Menu(validarPin, validacionUsu){
+    let usuario = validacionUsu();
+    let Pin = validarPin();
+
+    while(Pin && usuario === true){
+        let opcion = Number(prompt(`Selecione una opcion
+            1. Consultar saldo
+            2. Retirar
+            3. Transferir
+            4. salir`))
+        switch(opcion){
+            case 1: alert (`Su saldo es: ${usuario.Saldo}`)
+            break;
+            case 2:{
+                let retiro = Number(prompt(`Ingrese el monto que desea retirar
+                    1.$50000
+                    2.$100000
+                    3.$150000`))
+
+                    if(retiro === 1){
+                        
+                    }
+            }
+            case 3: return 3
+            case 4: return Pin = false
+        }
+    }
+}
+Menu();
