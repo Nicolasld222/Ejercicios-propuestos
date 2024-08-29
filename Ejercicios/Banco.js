@@ -1,7 +1,10 @@
 const usuarios = [
-    { identificacion: 109487, nombre: "Yarleno", pin: 4545, Saldo: 100000},
-    { identificacion: 100555, nombre: "Carlos", pin: 1234, Saldo: 100000},
-    { identificacion: 119234, nombre: "Camilo", pin: 8778, Saldo: 100000 }
+    { identificacion: 109487, nombre: "Yarleno", pin: 4545, saldo: 100000, numero_cuenta: 1 },
+    { identificacion: 109487, nombre: "Yarleno", pin: 4546, saldo: 100000, numero_cuenta: 2 },
+    { identificacion: 100555, nombre: "Carlos", pin: 1234, saldo: 100000, numero_cuenta: 1 },
+    { identificacion: 100555, nombre: "Carlos", pin: 1235, saldo: 100000, numero_cuenta: 2 },
+    { identificacion: 119234, nombre: "Camilo", pin: 8778, saldo: 100000, numero_cuenta: 1 },
+    { identificacion: 119234, nombre: "Camilo", pin: 8779, saldo: 100000, numero_cuenta: 2 }
 ];
 
 // Función para solicitar y devolver la identificación del usuario
@@ -11,58 +14,124 @@ function idIngresado() {
 
 // Función para solicitar y validar el PIN del usuario
 function validarPin(usuario) {
-    const pinIngresado = Number(prompt("Ingrese su PIN"));
-    if (pinIngresado === usuario.pin) {
-        alert(`Bienvenido, ${usuario.nombre}!`);
-        return true
-    } else {
-        alert("PIN incorrecto. Inténtelo de nuevo.");
-        return false
+    const intentosMax = 3;
+    let intentos = 0;
+
+    while (intentos < intentosMax) {
+        const pinIngresado = Number(prompt("Ingrese su PIN"));
+        if (pinIngresado === usuario.pin) {
+            alert(`Bienvenido, ${usuario.nombre}!`);
+            return true;
+        } else {
+            alert("PIN incorrecto. Inténtelo de nuevo.");
+            intentos++;
+        }
     }
+    
+    alert("Número máximo de intentos alcanzado. Inténtelo más tarde.");
+    return false;
 }
 
 // Función principal para validar al usuario
 function validacionUsu() {
-    const id = idIngresado(); 
+    const id = idIngresado();
     const usuario = usuarios.find(u => u.identificacion === id);
     
     if (usuario) {
-        validarPin(usuario);
+        if (validarPin(usuario)) {
+            return usuario;
+        } else {
+            return false;
+        }
     } else {
         alert("Usuario no encontrado.");
-        return false
+        return false;
     }
 }
 
-validacionUsu();
+// Función para encontrar destinatario
+function encontrarDestinatario(identificacion, numero_cuenta) {
+    return usuarios.find(u => u.identificacion === identificacion && u.numero_cuenta === numero_cuenta);
+}
 
-//Funcion menu
-function Menu(validarPin, validacionUsu){
-    let usuario = validacionUsu();
-    let Pin = validarPin();
+// Función principal del menú
+function Menu() {
+    const usuario = validacionUsu();
 
-    while(Pin && usuario === true){
-        let opcion = Number(prompt(`Selecione una opcion
+    if (!usuario) return; // Si la validación falla, salimos de la función
+
+    let continuar = true;
+
+    while (continuar) {
+        const opcion = Number(prompt(`Seleccione una opción:
             1. Consultar saldo
             2. Retirar
             3. Transferir
-            4. salir`))
-        switch(opcion){
-            case 1: alert (`Su saldo es: ${usuario.Saldo}`)
-            break;
-            case 2:{
-                let retiro = Number(prompt(`Ingrese el monto que desea retirar
-                    1.$50000
-                    2.$100000
-                    3.$150000`))
+            4. Salir`));
+        
+        switch (opcion) {
+            case 1:
+                alert(`Su saldo es: $${usuario.saldo}`);
+                break;
+            
+            case 2: {
+                const retiro = Number(prompt(`Ingrese el monto que desea retirar:
+                    1. $50000
+                    2. $100000
+                    3. $150000`));
+                
+                let montoRetiro;
+                if (retiro === 1) {
+                    montoRetiro = 50000;
+                } else if (retiro === 2) {
+                    montoRetiro = 100000;
+                } else if (retiro === 3) {
+                    montoRetiro = 150000;
+                } else {
+                    alert(`Monto no válido.`);
+                    break;
+                }
 
-                    if(retiro === 1){
-                        
-                    }
+                if (usuario.saldo >= montoRetiro) {
+                    usuario.saldo -= montoRetiro;
+                    alert(`Su retiro de $${montoRetiro} fue exitoso. Su nuevo saldo es: $${usuario.saldo}`);
+                } else {
+                    alert(`Saldo insuficiente.`);
+                }
+                break;
             }
-            case 3: return 3
-            case 4: return Pin = false
+            
+            case 3: {
+                const cuentaDestinada = Number(prompt("Ingrese la identificación del destinatario"));
+                const numCuentaDestinada = Number(prompt("Ingrese el número de cuenta del destinatario (1 o 2)"));
+                const montoTransferir = Number(prompt("Ingrese el monto que desea transferir"));
+
+                const destinatario = encontrarDestinatario(cuentaDestinada, numCuentaDestinada);
+                
+                if (destinatario) {
+                    if (usuario.saldo >= montoTransferir) {
+                        usuario.saldo -= montoTransferir;
+                        destinatario.saldo += montoTransferir;
+                        alert(`Su transferencia de $${montoTransferir} se realizó exitosamente.`);
+                    } else {
+                        alert(`Saldo insuficiente para realizar la transferencia.`);
+                    }
+                } else {
+                    alert(`Destinatario no encontrado.`);
+                }
+                break;
+            }
+            
+            case 4:
+                continuar = false;
+                alert(`Saliendo...`);
+                break;
+            
+            default:
+                alert(`Opción no válida.`);
+                break;
         }
     }
 }
+
 Menu();
