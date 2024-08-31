@@ -1,86 +1,132 @@
 let habitaciones = [
-    {habitacion: 1, Tipo: individual, capacidadPer: 2, mascotas: false, fumador: true, disponiblidad: true},
-    {habitacion: 2, Tipo: individual, capacidadPer: 2, mascotas: false, fumador: false, disponiblidad: true},
-    {habitacion: 3, Tipo: individual, capacidadPer: 2, mascotas: false, fumador: false, disponiblidad: true},
-    {habitacion: 4, Tipo: doble, capacidadPer: 4, mascotas: false, fumador: true, disponiblidad: true},
-    {habitacion: 5, Tipo: doble, capacidadPer: 4, mascotas: false, fumador: false, disponiblidad: true},
-    {habitacion: 6, Tipo: doble, capacidadPer: 4, mascotas: false, fumador: false, disponiblidad: true},
-    {habitacion: 7, Tipo: familiar, capacidadPer: 6, mascotas: true, fumador: true, disponiblidad: true},
-    {habitacion: 8, Tipo: familiar, capacidadPer: 6, mascotas: true, fumador: false, disponiblidad: true},
-    {habitacion: 9, Tipo: familiar, capacidadPer: 6, mascotas: true, fumador: false, disponiblidad: true}
+    { habitacion: 1, tipo: 'individual', capacidadPer: 2, mascotas: false, fumador: true, disponibilidad: true },
+    { habitacion: 2, tipo: 'individual', capacidadPer: 2, mascotas: false, fumador: false, disponibilidad: true },
+    { habitacion: 3, tipo: 'individual', capacidadPer: 2, mascotas: false, fumador: false, disponibilidad: true },
+    { habitacion: 4, tipo: 'doble', capacidadPer: 4, mascotas: false, fumador: true, disponibilidad: true },
+    { habitacion: 5, tipo: 'doble', capacidadPer: 4, mascotas: false, fumador: false, disponibilidad: true },
+    { habitacion: 6, tipo: 'doble', capacidadPer: 4, mascotas: false, fumador: false, disponibilidad: true },
+    { habitacion: 7, tipo: 'familiar', capacidadPer: 6, mascotas: true, fumador: true, disponibilidad: true },
+    { habitacion: 8, tipo: 'familiar', capacidadPer: 6, mascotas: true, fumador: false, disponibilidad: true },
+    { habitacion: 9, tipo: 'familiar', capacidadPer: 6, mascotas: true, fumador: false, disponibilidad: true }
 ];
 
-//Funcion Habitaciones disponibles 
-function habitacionesdis(Habitaciones){
-    const disponibles = habitaciones.habitacion
+let reservas = [];
+
+// Función para filtrar habitaciones según las respuestas de la encuesta
+function encuesta() {
+    let mascota = prompt("¿Se va a hospedar alguna mascota? (si/no)").trim().toLowerCase();
+    let fuma = prompt("¿Alguna de las personas que se va a hospedar fuma? (si/no)").trim().toLowerCase();
+
+    if (mascota === 'si' && fuma === 'si') {
+        return 'fumamascota';
+    } else if (mascota === 'si' && fuma === 'no') {
+        return 'mascota';
+    } else if (mascota === 'no' && fuma === 'si') {
+        return 'fumador';
+    } else if (mascota === 'no' && fuma === 'no') {
+        return 'normal';
+    } else {
+        alert(`Llena la encuesta correctamente`);
+        return null;
+    }
 }
 
+// Función para mostrar habitaciones disponibles según la encuesta
+function habitacion(tipoCliente, habitaciones, tipoHabitacion, numPersonas) {
+    if (!tipoCliente || !tipoHabitacion) return;
 
-function Menu(){
-
-    let check = true
-    while(check === true){
-        let opcion = Number(prompt(`Seleccione una opcion
-            1.Habitaciones disponisponibles
-            2.Separar una habitacion
-            4.Salir`))
+    const habitacionesDisponibles = habitaciones.filter(h => {
+        if (!h.disponibilidad || h.tipo !== tipoHabitacion || numPersonas > h.capacidadPer) return false;
         
-        switch(opcion){
+        if (tipoCliente === 'fumamascota') {
+            return h.mascotas && h.fumador;
+        } else if (tipoCliente === 'mascota') {
+            return h.mascotas && !h.fumador;
+        } else if (tipoCliente === 'fumador') {
+            return !h.mascotas && h.fumador;
+        } else {
+            return !h.mascotas && !h.fumador;
+        }
+    });
+
+    if (habitacionesDisponibles.length === 0) {
+        alert("No hay habitaciones disponibles para esta opción.");
+    } else {
+        alert("Habitaciones disponibles:", habitacionesDisponibles);
+    }
+
+    return habitacionesDisponibles;
+}
+
+// Función para reservar una habitación
+function reservarHabitacion(nombre, pais, tipoHabitacion, numPersonas, periodo, mascotas, fumador) {
+    let tipoCliente = mascotas && fumador ? 'fumamascota' : mascotas ? 'mascota' : fumador ? 'fumador' : 'normal';
+    let habitacionesDisponibles = habitacion(tipoCliente, habitaciones, tipoHabitacion, numPersonas);
+
+    if (habitacionesDisponibles && habitacionesDisponibles.length > 0) {
+        let habitacionSeleccionada = habitacionesDisponibles[0];
+        habitacionSeleccionada.disponibilidad = false;
+        reservas.push({
+            nombre,
+            pais,
+            habitacion: habitacionSeleccionada.habitacion,
+            tipoHabitacion,
+            numPersonas,
+            periodo,
+            mascotas,
+            fumador
+        });
+        alert("Reserva realizada con éxito para " + nombre + " en la habitación " + habitacionSeleccionada.habitacion);
+    } else {
+        alert("No se pudo realizar la reserva. No hay habitaciones disponibles.");
+    }
+}
+
+// Función para obtener el número total de reservas
+function obtenerTotalReservas() {
+    return reservas.length;
+}
+
+// Función principal de menú
+function Menu() {
+    let check = true;
+    while (check) {
+        let opcion = Number(prompt(`Seleccione una opción:
+            1. Ver habitaciones disponibles
+            2. Reservar una habitación
+            3. Salir`));
+
+        switch (opcion) {
             case 1:
+                let tipoHabitacion = prompt("¿Qué tipo de habitación desea? (individual/doble/familiar)").trim().toLowerCase();
+                let numPersonas = Number(prompt("¿Cuántas personas se van a hospedar?"));
+                let tipoCliente = encuesta();
+                habitacion(tipoCliente, habitaciones, tipoHabitacion, numPersonas);
+                break;
             case 2:
-            case 3: check = false
+                let nombre = prompt("Ingrese su nombre:").trim();
+                let pais = prompt("Ingrese su país de origen:").trim();
+                tipoHabitacion = prompt("¿Qué tipo de habitación desea? (individual/doble/familiar)").trim().toLowerCase();
+                numPersonas = Number(prompt("¿Cuántas personas se van a hospedar?"));
+                let periodo = prompt("Ingrese el periodo de su estadía (ej. 2024-09-01 a 2024-09-10):").trim();
+                let mascota = prompt("¿Se va a hospedar alguna mascota? (si/no)").trim().toLowerCase() === 'si';
+                let fuma = prompt("¿Alguna de las personas que se va a hospedar fuma? (si/no)").trim().toLowerCase() === 'si';
+
+                if (tipoHabitacion === 'familiar' || !mascota) {
+                    reservarHabitacion(nombre, pais, tipoHabitacion, numPersonas, periodo, mascota, fuma);
+                } else {
+                    alert("No se pueden hospedar mascotas en habitaciones que no sean familiares.");
+                }
+                break;
+            case 3:
+                check = false;
+                break;
+            default:
+                alert("Opción no válida. Inténtalo de nuevo.");
         }
     }
+
+    alert("Total de habitaciones reservadas:", obtenerTotalReservas());
 }
 
-
-
-
-
-
-let habitaciones = [
-    {habitacion: 1, Tipo: individual, capacidadPer: 2, mascotas: false, fumador: true, disponiblidad: true},
-    {habitacion: 2, Tipo: individual, capacidadPer: 2, mascotas: false, fumador: false, disponiblidad: true},
-    {habitacion: 3, Tipo: individual, capacidadPer: 2, mascotas: false, fumador: false, disponiblidad: true},
-    {habitacion: 4, Tipo: doble, capacidadPer: 4, mascotas: false, fumador: true, disponiblidad: true},
-    {habitacion: 5, Tipo: doble, capacidadPer: 4, mascotas: false, fumador: false, disponiblidad: true},
-    {habitacion: 6, Tipo: doble, capacidadPer: 4, mascotas: false, fumador: false, disponiblidad: true},
-    {habitacion: 7, Tipo: familiar, capacidadPer: 6, mascotas: true, fumador: true, disponiblidad: true},
-    {habitacion: 8, Tipo: familiar, capacidadPer: 6, mascotas: true, fumador: false, disponiblidad: true},
-    {habitacion: 9, Tipo: familiar, capacidadPer: 6, mascotas: true, fumador: false, disponiblidad: true}
-];
-
-
-
-//Funcion Habitaciones disponibles 
-function habitacionesdis(Habitaciones){
-    if (habitaciones.find(h => h.disponiblidad === true)){
-        alert(`Su habitacion esta disponible`)
-        return true
-    }else if(habitaciones.find(h => h.disponiblidad === false)){
-        alert(`Esta habitacion esta disponible`)
-    }else{
-        alert(`Igrese una habitacion`)
-    }
-    
-
-
-}
-
-
-function Menu(){
-
-    let check = true
-    while(check === true){
-        let opcion = Number(prompt(`Seleccione una opcion
-            1.Habitaciones disponisponibles
-            2.Separar una habitacion
-            4.Salir`))
-        
-        switch(opcion){
-            case 1:
-            case 2:
-            case 3: check = false
-        }
-    }
-}
+Menu();
