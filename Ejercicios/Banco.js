@@ -58,7 +58,7 @@ function encontrarDestinatario(identificacion, numero_cuenta) {
 function Menu() {
     const usuario = validacionUsu();
 
-    if (!usuario) return; // Si la validación falla, salimos de la función
+    if (!usuario) return; 
 
     let continuar = true;
 
