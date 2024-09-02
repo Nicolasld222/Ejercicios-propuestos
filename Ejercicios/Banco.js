@@ -39,16 +39,7 @@ function validacionUsu() {
     
     if (usuario) {
         if (validarPin(usuario)) {
-            const cuentas = usuarios.filter(u => u.identificacion === id);
-            const numCuenta = Number(prompt(`Seleccione el número de cuenta (1 o 2) de las siguientes cuentas disponibles:\n${cuentas.map(c => c.numero_cuenta).join('\n')}`));
-            const cuentaSeleccionada = cuentas.find(c => c.numero_cuenta === numCuenta);
-            
-            if (cuentaSeleccionada) {
-                return cuentaSeleccionada;
-            } else {
-                alert("Número de cuenta no válido.");
-                return false;
-            }
+            return usuario;
         } else {
             return false;
         }
